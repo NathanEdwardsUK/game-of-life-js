@@ -1,36 +1,27 @@
-const config = {
+const CONFIG = {
   cellSize: 5,
   aliveColor: "rgb(0, 0, 0)",
   deadColor: "rgb(253, 246, 237)",
   refreshInterval: 500,
-  initialAliveProbability: 0.1,
+  initialAliveProbability: 0.15,
 };
 
-let resizedWindow = false;
-
-function renderBoardOnCanvas(board, canvas) {
-  let ctx = canvas.getContext("2d");
-
+function renderBoardOnCanvas(board, ctx) {
   for (let j = 0; j < board.length; j++) {
     for (let i = 0; i < board[j].length; i++) {
-      ctx.fillStyle = board[j][i] == 1 ? config.aliveColor : config.deadColor;
+      ctx.fillStyle = board[j][i] == 1 ? CONFIG.aliveColor : CONFIG.deadColor;
       ctx.fillRect(
-        i * config.cellSize,
-        j * config.cellSize,
-        config.cellSize,
-        config.cellSize
+        i * CONFIG.cellSize,
+        j * CONFIG.cellSize,
+        CONFIG.cellSize,
+        CONFIG.cellSize
       );
     }
   }
 }
 
-function restartGame() {
-  resizedWindow = true;
-}
-window.addEventListener("resize", restartGame);
-
 class Board {
-  initNewBoard(boardHeight, boardWidth) {
+  constructor(boardHeight, boardWidth, aliveProbability) {
     this.boardHeight = boardHeight;
     this.boardWidth = boardWidth;
     this.currentState = new Array(boardHeight);
@@ -40,9 +31,11 @@ class Board {
     }
 
     this.nextState = structuredClone(this.currentState);
+    this.fillBoardRandomly(aliveProbability);
+    this.calculateNextBoardState();
   }
 
-  fillBoardRandomly(aliveProbability = 0.5) {
+  fillBoardRandomly(aliveProbability) {
     for (let j = 0; j < this.boardHeight; j++) {
       for (let i = 0; i < this.boardWidth; i++) {
         this.currentState[j][i] = Number(Math.random() < aliveProbability);
@@ -57,7 +50,7 @@ class Board {
       }
     }
 
-    this.currentState = structuredClone(this.nextState);
+    [this.currentState] = [this.nextState];
   }
 
   calculateNextCellState(x, y) {
@@ -80,44 +73,48 @@ class Board {
   }
 }
 
-function playGame2() {
-  const body = document.querySelector("body");
-  const canvas = document.getElementById("game-canvas");
-  const ctx = canvas.getContext("2d");
+class Game {
+  constructor() {
+    this.body = document.querySelector("body");
+    this.canvas = document.getElementById("game-canvas");
+    this.ctx = this.canvas.getContext("2d");
+  }
 
-  canvas.height =
-    Math.round(body.offsetHeight / config.cellSize) * config.cellSize;
-  canvas.width =
-    Math.round(body.offsetWidth / config.cellSize) * config.cellSize;
+  resizeCanvas() {
+    this.canvas.height = Math.round(this.body.offsetHeight / CONFIG.cellSize) * CONFIG.cellSize;
+    this.canvas.width = Math.round(this.body.offsetWidth / CONFIG.cellSize) * CONFIG.cellSize;
+  }
 
-  let board = new Board();
+  initNewGame() {
+    this.resizeCanvas();
+    let boardHeight = this.canvas.height / CONFIG.cellSize;
+    let boardwidth = this.canvas.width / CONFIG.cellSize;
+    this.board = new Board(boardHeight, boardwidth, CONFIG.initialAliveProbability);
+  }
 
-  board.initNewBoard(
-    canvas.height / config.cellSize,
-    canvas.width / config.cellSize
-  );
-  board.fillBoardRandomly(config.initialAliveProbability);
-  board.calculateNextBoardState();
-  renderBoardOnCanvas(board.currentState, canvas);
+  run() {
+    this.initNewGame();
 
-  setInterval(() => {
-    if (resizedWindow) {
-      resizedWindow = false;
-      canvas.height =
-        Math.round(body.offsetHeight / config.cellSize) * config.cellSize;
-      canvas.width =
-        Math.round(body.offsetWidth / config.cellSize) * config.cellSize;
+    setInterval(() => {
+      if (resizedWindow) {
+        resizedWindow = false;
+        this.initNewGame();
+      }
 
-      board.initNewBoard(
-        canvas.height / config.cellSize,
-        canvas.width / config.cellSize
-      );
-      board.fillBoardRandomly(config.initialAliveProbability);
-    }
-
-    board.calculateNextBoardState();
-    renderBoardOnCanvas(board.currentState, canvas);
-  }, config.refreshInterval);
+      this.board.calculateNextBoardState();
+      renderBoardOnCanvas(this.board.currentState, this.ctx);
+    }, CONFIG.refreshInterval);
+  }
 }
 
-playGame2();
+
+let resizedWindow = false;
+
+function restartGame() {
+  resizedWindow = true;
+}
+
+window.addEventListener("resize", restartGame);
+
+const game = new Game();
+game.run();
