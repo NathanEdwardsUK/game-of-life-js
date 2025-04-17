@@ -1,22 +1,16 @@
 body {
   height: 100vh;
   width: 100vw;
-  background-color: rgb(226, 223, 216);
-  margin: 0;
-}
-
-#game-container {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* background-color: rgb(226, 223, 216);
+  margin: 0; */
 }
 
 canvas {
   /* height: 80%;
   width: 80%; */
-  background-color: white;
-  border: solid;
   image-rendering: pixelated;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
 }
