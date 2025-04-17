@@ -1,104 +1,3 @@
-// const config = {
-//   cellSize: 5,
-//   aliveColor: "black",
-//   refreshInterval: 100,
-//   initialAliveProbability: 0.1,
-// };
-
-// function fillArrayRandomly(array, aliveProbability = 0.5) {
-//   for (let j = 0; j < array.length; j++) {
-//     for (let i = 0; i < array[j].length; i++) {
-//       array[j][i] = Math.random() < aliveProbability ? 1 : 0;
-//     }
-//   }
-
-//   return array;
-// }
-
-// function renderBoardOnCanvas(board, canvas) {
-//   ctx = canvas.getContext();
-//   deadColor = canvas.style.backgroundColor;
-
-//   for (let j = 0; j < board.length; j++) {
-//     for (let i = 0; i < board[j].length; i++) {
-//       ctx.fillStyle = board[j][i] == 1 ? config.aliveColor : deadColor;
-//       ctx.fillRect(
-//         i * config.cellSize,
-//         j * config.cellSize,
-//         config.cellSize,
-//         config.cellSize
-//       );
-//     }
-//   }
-// }
-
-// function calculateNextCellState(board, x, y) {
-//   let countLiveNeighbours = 0;
-//   for (let i = x - 1; i <= x + 1; i++) {
-//     for (let j = y - 1; j <= y + 1; j++) {
-//       if (i == x && j == y) continue;
-//       if (i < 0 || i >= board[0].length) continue;
-//       if (j < 0 || j >= board.length) continue;
-
-//       countLiveNeighbours += board[j][i] == 1;
-//     }
-//   }
-
-//   let cellIsAlive = board[y][x] == 1;
-
-//   if ((cellIsAlive && countLiveNeighbours == 2) || countLiveNeighbours == 3) {
-//     return 1;
-//   } else {
-//     return 0;
-//   }
-// }
-
-// function calculateNextBoard(board) {
-//   let boardHeight = board.length;
-//   let boardWidth = board[0].length;
-
-//   let nextBoard = new Array(boardHeight);
-//   for (let j = 0; j < boardHeight; j++) {
-//     nextBoard[j] = new Array(boardWidth);
-
-//     for (let i = 0; i < boardWidth; i++) {
-//       nextBoard[j][i] = calculateNextCellState(board, i, j);
-//     }
-//   }
-
-//   return nextBoard;
-// }
-
-// function playGame() {
-//   const gameContainer = document.getElementById("game-container");
-//   const canvas = document.getElementById("game-canvas");
-//   const ctx = canvas.getContext("2d");
-
-//   canvas.height =
-//     Math.round((gameContainer.offsetHeight * 0.8) / config.cellSize) *
-//     config.cellSize;
-//   canvas.width =
-//     Math.round((gameContainer.offsetWidth * 0.8) / config.cellSize) *
-//     config.cellSize;
-
-//   let board = new Array(canvas.height / config.cellSize);
-
-//   for (let j = 0; j < board.length; j++) {
-//     board[j] = new Array(canvas.width).fill(0);
-//   }
-
-//   board = fillArrayRandomly(board, config.initialAliveProbability);
-//   renderBoardOnCanvas(board, ctx);
-
-//   timestamp = Date.now();
-//   setInterval(() => {
-//     board = calculateNextBoard(board);
-//     renderBoardOnCanvas(board, ctx);
-//   }, config.refreshInterval);
-// }
-
-// playGame();
-
 const config = {
   cellSize: 5,
   aliveColor: "rgb(0, 0, 0)",
@@ -108,16 +7,6 @@ const config = {
 };
 
 let resizedWindow = false;
-
-function fillArrayRandomly(array, aliveProbability = 0.5) {
-  for (let j = 0; j < array.length; j++) {
-    for (let i = 0; i < array[j].length; i++) {
-      array[j][i] = Math.random() < aliveProbability ? 1 : 0;
-    }
-  }
-
-  return array;
-}
 
 function renderBoardOnCanvas(board, canvas) {
   let ctx = canvas.getContext("2d");
@@ -135,44 +24,63 @@ function renderBoardOnCanvas(board, canvas) {
   }
 }
 
-function calculateNextCellState(board, x, y) {
-  let countLiveNeighbours = 0;
-  for (let i = x - 1; i <= x + 1; i++) {
-    for (let j = y - 1; j <= y + 1; j++) {
-      if (i == x && j == y) continue;
-      if (i < 0 || i >= board[0].length) continue;
-      if (j < 0 || j >= board.length) continue;
+function restartGame() {
+  resizedWindow = true;
+}
+window.addEventListener("resize", restartGame);
 
-      countLiveNeighbours += board[j][i] == 1;
+class Board {
+  initNewBoard(boardHeight, boardWidth) {
+    this.boardHeight = boardHeight;
+    this.boardWidth = boardWidth;
+    this.currentState = new Array(boardHeight);
+
+    for (let j = 0; j < boardHeight; j++) {
+      this.currentState[j] = new Array(boardWidth);
+    }
+
+    this.nextState = structuredClone(this.currentState);
+  }
+
+  fillBoardRandomly(aliveProbability = 0.5) {
+    for (let j = 0; j < this.boardHeight; j++) {
+      for (let i = 0; i < this.boardWidth; i++) {
+        this.currentState[j][i] = Number(Math.random() < aliveProbability);
+      }
     }
   }
 
-  let cellIsAlive = board[y][x] == 1;
-
-  if ((cellIsAlive && countLiveNeighbours == 2) || countLiveNeighbours == 3) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
-function calculateNextBoard(board) {
-  let boardHeight = board.length;
-  let boardWidth = board[0].length;
-
-  let nextBoard = new Array(boardHeight);
-  for (let j = 0; j < boardHeight; j++) {
-    nextBoard[j] = new Array(boardWidth);
-
-    for (let i = 0; i < boardWidth; i++) {
-      nextBoard[j][i] = calculateNextCellState(board, i, j);
+  calculateNextBoardState() {
+    for (let j = 0; j < this.boardHeight; j++) {
+      for (let i = 0; i < this.boardWidth; i++) {
+        this.nextState[j][i] = this.calculateNextCellState(i, j);
+      }
     }
+
+    this.currentState = structuredClone(this.nextState);
   }
 
-  return nextBoard;
+  calculateNextCellState(x, y) {
+    let countLiveNeighbours = 0;
+    for (let i = x - 1; i <= x + 1; i++) {
+      for (let j = y - 1; j <= y + 1; j++) {
+        if (i == x && j == y) continue;
+        if (i < 0 || i >= this.boardWidth) continue;
+        if (j < 0 || j >= this.boardHeight) continue;
+
+        countLiveNeighbours += this.currentState[j][i] == 1;
+      }
+    }
+
+    let cellIsAlive = this.currentState[y][x] == 1;
+
+    return (cellIsAlive && countLiveNeighbours == 2) || countLiveNeighbours == 3
+      ? 1
+      : 0;
+  }
 }
 
-function playGame() {
+function playGame2() {
   const body = document.querySelector("body");
   const canvas = document.getElementById("game-canvas");
   const ctx = canvas.getContext("2d");
@@ -182,18 +90,16 @@ function playGame() {
   canvas.width =
     Math.round(body.offsetWidth / config.cellSize) * config.cellSize;
 
-  let board = new Array(canvas.height / config.cellSize);
+  let board = new Board();
 
-  for (let j = 0; j < board.length; j++) {
-    board[j] = new Array(canvas.width / config.cellSize).fill(0);
-  }
+  board.initNewBoard(
+    canvas.height / config.cellSize,
+    canvas.width / config.cellSize
+  );
+  board.fillBoardRandomly(config.initialAliveProbability);
+  board.calculateNextBoardState();
+  renderBoardOnCanvas(board.currentState, canvas);
 
-  board = fillArrayRandomly(board, config.initialAliveProbability);
-  board = calculateNextBoard(board);
-  board = calculateNextBoard(board);
-  renderBoardOnCanvas(board, canvas);
-
-  timestamp = Date.now();
   setInterval(() => {
     if (resizedWindow) {
       resizedWindow = false;
@@ -202,24 +108,16 @@ function playGame() {
       canvas.width =
         Math.round(body.offsetWidth / config.cellSize) * config.cellSize;
 
-      board = new Array(canvas.height / config.cellSize);
-
-      for (let j = 0; j < board.length; j++) {
-        board[j] = new Array(canvas.width / config.cellSize).fill(0);
-      }
-
-      board = fillArrayRandomly(board, config.initialAliveProbability);
-      board = calculateNextBoard(board);
+      board.initNewBoard(
+        canvas.height / config.cellSize,
+        canvas.width / config.cellSize
+      );
+      board.fillBoardRandomly(config.initialAliveProbability);
     }
 
-    board = calculateNextBoard(board);
-    renderBoardOnCanvas(board, canvas);
+    board.calculateNextBoardState();
+    renderBoardOnCanvas(board.currentState, canvas);
   }, config.refreshInterval);
 }
 
-function restartGame() {
-  resizedWindow = true;
-}
-window.addEventListener("resize", restartGame);
-
-playGame();
+playGame2();
