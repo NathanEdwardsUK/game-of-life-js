@@ -50,7 +50,9 @@ class Board {
       }
     }
 
-    [this.currentState] = [this.nextState];
+    // Uncommenting this reference switch creates a different behaviour whereby the board converges to an oscillating maze
+    // [this.currentState] = [this.nextState];
+    this.currentState = structuredClone(this.nextState);
   }
 
   calculateNextCellState(x, y) {
