@@ -1,13 +1,9 @@
 body {
   height: 100vh;
   width: 100vw;
-  /* background-color: rgb(226, 223, 216);
-  margin: 0; */
 }
 
 canvas {
-  /* height: 80%;
-  width: 80%; */
   image-rendering: pixelated;
   position: absolute;
   left: 0;
