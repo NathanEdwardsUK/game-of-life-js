@@ -345,3 +345,16 @@ export const GLIDER = [
 ];
 
 export const SINGLE = [[1]];
+
+export const PATTERNS = {
+  Glider: [
+    [0, 0, 1],
+    [1, 0, 1],
+    [0, 1, 1],
+  ],
+  Square: [
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+  ],
+};

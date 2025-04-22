@@ -17,7 +17,7 @@ div.button-container {
   right: 0;
 }
 
-div#pattern-button-container {
+div#pattern-dropdown-container {
   z-index: 1;
   position: fixed;
   bottom: 0;

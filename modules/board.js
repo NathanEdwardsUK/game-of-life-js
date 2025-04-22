@@ -79,7 +79,7 @@ export class Board {
   }
 
   insertArray(insertArray, x, y) {
-    // Inserts array into board joining insertArray[0,0] at boardCells[x, y]
+    // Inserts int array into board setting boardCells[x, y] = insertArray[0,0]
     let insertHeight = insertArray.length;
     let insertWidth = insertArray[0].length;
 
@@ -94,7 +94,7 @@ export class Board {
 
     for (let j = 0; j < insertHeight; j++) {
       for (let i = 0; i < insertWidth; i++) {
-        this.cells[y + j][x + i].setState(insertArray[j][i].getState());
+        this.cells[y + j][x + i].setState(insertArray[j][i]);
       }
     }
   }

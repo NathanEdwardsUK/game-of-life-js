@@ -1,5 +1,5 @@
 import { Board } from "/modules/board.js";
-import { WELCOME_MSG_STATE_MIN, SINGLE, GLIDER } from "./patterns.js";
+import { PATTERNS } from "./patterns.js";
 
 export class Game {
   constructor(canvas, initialAliveProbability, refreshInterval, initialState) {
@@ -8,17 +8,16 @@ export class Game {
     this.refreshInterval = refreshInterval;
     this.initialState = initialState;
     this.resizeTrigger = false;
+    this.selectedPattern = "none";
   }
 
   handleCanvasClick(event) {
     let cell = this.windowCoordinatesToCell(event.x, event.y);
-    let [cellX, cellY] = cell.getCoordinates();
-    let newPattern = this.board.intArrayToCells(GLIDER);
-
-    if (typeof newPattern === "undefined") {
+    if (this.selectedPattern == "none") {
       cell.toggleState();
     } else {
-      this.board.insertArray(newPattern, cellX, cellY);
+      let [cellX, cellY] = cell.getCoordinates();
+      this.board.insertArray(PATTERNS[this.selectedPattern], cellX, cellY);
     }
 
     this.canvas.renderBoard(this.board.getCells());
@@ -90,5 +89,9 @@ export class Game {
   clearBoard() {
     this.board.clearCells();
     this.updateAndRenderBoard();
+  }
+
+  changeSelectedPattern(pattern) {
+    this.selectedPattern = pattern;
   }
 }

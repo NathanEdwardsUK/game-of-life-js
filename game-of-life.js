@@ -1,12 +1,18 @@
 import { Canvas } from "/modules/canvas.js";
 import { Game } from "/modules/game.js";
 import { CONFIG } from "/modules/config.js";
+import { PATTERNS } from "./modules/patterns.js";
 
 let htmlBody = document.querySelector("body");
 let htmlCanvas = document.getElementById("game-canvas");
 let runButton = document.getElementById("run-button");
 let stopButton = document.getElementById("stop-button");
 let clearButton = document.getElementById("clear-button");
+
+let patternDropdown = document.getElementById("pattern-dropdown");
+for (const pattern in PATTERNS) {
+  patternDropdown.options.add(new Option(pattern, pattern));
+}
 
 const canvas = new Canvas(
   htmlBody,
@@ -43,14 +49,18 @@ clearButton.addEventListener("click", (event) => {
   game.clearBoard();
 });
 
-var div = document.querySelector("#pattern-button-container"),
-  frag = document.createDocumentFragment(),
-  select = document.createElement("select");
+patternDropdown.addEventListener("change", (event) => {
+  game.changeSelectedPattern(patternDropdown.value);
+});
 
-select.options.add(new Option("Method1", "AU", true, true));
-select.options.add(new Option("Method2", "FI"));
+// var div = document.querySelector("#pattern-button-container"),
+//   frag = document.createDocumentFragment(),
+//   select = document.createElement("select");
 
-frag.appendChild(select);
-div.appendChild(frag);
+// select.options.add(new Option("Method1", "AU", true, true));
+// select.options.add(new Option("Method2", "FI"));
+
+// frag.appendChild(select);
+// div.appendChild(frag);
 
 game.run();
