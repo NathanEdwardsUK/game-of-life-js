@@ -1,7 +1,7 @@
-import { WELCOME_MSG_STATE_SMALL } from "./welcome-message.js";
+import { WELCOME_MSG_STATE_SMALL } from "./patterns.js";
 
 export const CONFIG = {
-  cellSize: 6,
+  cellSize: 12,
   aliveColor: "rgb(0, 0, 0)",
   deadColor: "rgb(253, 246, 237)",
   refreshInterval: 100,

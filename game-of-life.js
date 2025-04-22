@@ -1,16 +1,56 @@
+import { Canvas } from "/modules/canvas.js";
 import { Game } from "/modules/game.js";
 import { CONFIG } from "/modules/config.js";
 
-window.addEventListener("resize", restartGame);
+let htmlBody = document.querySelector("body");
+let htmlCanvas = document.getElementById("game-canvas");
+let runButton = document.getElementById("run-button");
+let stopButton = document.getElementById("stop-button");
+let clearButton = document.getElementById("clear-button");
+
+const canvas = new Canvas(
+  htmlBody,
+  htmlCanvas,
+  CONFIG.cellSize,
+  CONFIG.aliveColor,
+  CONFIG.deadColor
+);
 
 const game = new Game(
-  CONFIG.cellSize,
+  canvas,
   CONFIG.initialAliveProbability,
   CONFIG.refreshInterval,
   CONFIG.initialState
 );
-game.run();
 
-function restartGame() {
+window.addEventListener("resize", () => {
   game.triggerCanvasResize();
-}
+});
+
+htmlCanvas.addEventListener("click", (event) => {
+  game.handleCanvasClick(event);
+});
+
+runButton.addEventListener("click", (event) => {
+  game.handleStartButtonClick();
+});
+
+stopButton.addEventListener("click", (event) => {
+  game.pause();
+});
+
+clearButton.addEventListener("click", (event) => {
+  game.clearBoard();
+});
+
+var div = document.querySelector("#pattern-button-container"),
+  frag = document.createDocumentFragment(),
+  select = document.createElement("select");
+
+select.options.add(new Option("Method1", "AU", true, true));
+select.options.add(new Option("Method2", "FI"));
+
+frag.appendChild(select);
+div.appendChild(frag);
+
+game.run();

@@ -5,12 +5,24 @@ export class Cell {
     this.nextState = state;
   }
 
+  getCoordinates() {
+    return this.coordinates;
+  }
+
   getState() {
     return this.state;
   }
 
   setState(state) {
     this.state = state;
+  }
+
+  toggleState() {
+    if (this.state === 1) {
+      this.state = 0;
+    } else if (this.state === 0) {
+      this.state = 1;
+    }
   }
 
   updateState() {

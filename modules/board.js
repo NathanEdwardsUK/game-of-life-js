@@ -78,23 +78,46 @@ export class Board {
     return array;
   }
 
-  intArrayToCells(array, aliveProbability) {
+  insertArray(insertArray, x, y) {
+    // Inserts array into board joining insertArray[0,0] at boardCells[x, y]
+    let insertHeight = insertArray.length;
+    let insertWidth = insertArray[0].length;
+
+    if (
+      x < 0 ||
+      y < 0 ||
+      x + insertWidth >= this.boardWidth ||
+      y + insertHeight >= this.boardHeight
+    ) {
+      return;
+    }
+
+    for (let j = 0; j < insertHeight; j++) {
+      for (let i = 0; i < insertWidth; i++) {
+        this.cells[y + j][x + i].setState(insertArray[j][i].getState());
+      }
+    }
+  }
+
+  intArrayToCells(intArray, aliveProbability) {
     // Converts an int array into an array of cells
-    let board = new Array(this.boardHeight);
+    let height = intArray.length;
+    let width = intArray[0].length;
+    let cells = new Array(height);
 
-    for (let j = 0; j < this.boardHeight; j++) {
-      board[j] = new Array(this.boardWidth);
+    for (let j = 0; j < height; j++) {
+      cells[j] = new Array(width);
 
-      for (let i = 0; i < this.boardWidth; i++) {
-        let cellState = array[j][i];
+      for (let i = 0; i < width; i++) {
+        let cellState = intArray[j][i];
         if (cellState == -1) {
           cellState = Number(Math.random() < aliveProbability);
         }
-        board[j][i] = new Cell([i, j], cellState);
+        cells[j][i] = new Cell([i, j], cellState);
       }
     }
 
-    return board;
+    return cells;
   }
 
   updateCells() {
@@ -113,6 +136,14 @@ export class Board {
       for (let i = 0; i < this.boardWidth; i++) {
         let cell = this.cells[j][i];
         cell.updateState();
+      }
+    }
+  }
+
+  clearCells() {
+    for (let j = 0; j < this.boardHeight; j++) {
+      for (let i = 0; i < this.boardWidth; i++) {
+        this.cells[j][i].setState(0);
       }
     }
   }
